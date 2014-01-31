@@ -24,6 +24,10 @@ class ServizioPubblico():
         self.quality = findall('<iphone><!\[CDATA\[.*sp,(.*),.*\]\]></iphone>', data)[0]
         self.quality = [int(i) for i in self.quality.split(',')]
         self.quality.sort()
+        
+        # set best quality
+        old_quality = findall('_sp(.*).mp4', self.url)[0]
+        self.url_best_quality = self.url.replace('_sp%s' % old_quality, '_sp%s' % self.quality[-1])
 
 def main():
     usage = 'usage: %prog [options] url'
@@ -41,14 +45,10 @@ def main():
     page = args[0]
     provider = ServizioPubblico(page)
 
-    url = provider.url
+    url = provider.url_best_quality
     title = provider.title
-    quality = provider.quality
-    
-    old_quality = findall('_sp(.*).mp4', url)[0]
-    url_best_quality = url.replace('_sp%s' % old_quality, '_sp%s' % quality[-1])
-    
-    call("wget -c %s -O %s.mp4" % (url_best_quality, title.replace(' ','_')),
+
+    call("wget -c %s -O %s.mp4" % (url, title.replace(' ','_')),
         shell = True
         )
 
