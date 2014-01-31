@@ -4,6 +4,7 @@ import webkit
 import time
 import gtk
 from subprocess import call
+from re import findall
 from optparse import OptionParser
 
 HOST = "serviziopubblico.it"
@@ -56,7 +57,8 @@ class ServizioPubblico():
             info = title.replace(self.LABEL_FOUND, "").strip().split()
             self.video_url = info[0].strip()
             self.video_quality = info[1].strip().split(',')
-            print info
+            self.video_quality = [ int(i) for i in self.video_quality]
+            self.video_quality.sort()
             self.view_title = " ".join(info[2:])
             gtk.main_quit()
 
@@ -80,17 +82,11 @@ def main():
     title = provider.title()
     quality = provider.quality()
     
-    info = url.split('_sp')
-    url_best_quality = "%(base)s_sp%(quality)s%(tail)s" % {
-        'base': info[0],
-        'quality': quality[-1],
-        'tail': info[1],
-    }
+    old_quality = findall('_sp(.*).mp4', url)[0]
+    url_best_quality = url.replace('_sp%s' % old_quality, '_sp%s' % quality[-1])
     
-    call("wget -c %s -O %s.mp4" % (
-                url_best_quality,
-                title.replace(' ','_')
-            )
+    call("wget -c %s -O %s.mp4" % (url_best_quality, title.replace(' ','_')),
+        shell = True
         )
 
     
