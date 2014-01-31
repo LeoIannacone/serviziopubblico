@@ -24,7 +24,7 @@ class ServizioPubblico():
         self.quality = findall('<iphone><!\[CDATA\[.*sp,(.*),.*\]\]></iphone>', data)[0]
         self.quality = [int(i) for i in self.quality.split(',')]
         self.quality.sort()
-        
+
         # set best quality
         old_quality = findall('_sp(.*).mp4', self.url)[0]
         self.url_best_quality = self.url.replace('_sp%s' % old_quality, '_sp%s' % self.quality[-1])
@@ -33,10 +33,10 @@ def main():
     usage = 'usage: %prog [options] url'
     parser = OptionParser(usage)
     parser.add_option('-d', '--download', action="store_true", default=False, help='download video')
-    parser.add_option('-v', '--videoplayer', default="vlc", help='choose video player')
-    
+    parser.add_option('-v', '--videoplayer', default="vlc", help='choose video player [default: %default]')
+
     opts, args = parser.parse_args()
-    
+
     if len(args) is 0 or args[0].find(HOST) < 0:
         print('Please provide a valid url for %s' % HOST)
         parser.print_usage()
@@ -48,11 +48,15 @@ def main():
     url = provider.url_best_quality
     title = provider.title
 
-    call("wget -c %s -O %s.mp4" % (url, title.replace(' ','_')),
-        shell = True
-        )
+    if opts.download:
+        call("wget -c %s -O %s.mp4" % (url, title.replace(' ','_')),
+            shell = True
+            )
+    else:
+        call("%s %s" % (opts.videoplayer, url), 
+            shell = True
+            )
 
-    
 
 if __name__ == '__main__':
     main()
