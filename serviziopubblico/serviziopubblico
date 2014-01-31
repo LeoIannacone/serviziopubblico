@@ -1,0 +1,100 @@
+#!/usr/bin/python
+
+import webkit
+import time
+import gtk
+from subprocess import call
+from optparse import OptionParser
+
+HOST = "serviziopubblico.it"
+JS_DEBUG = False
+
+class ServizioPubblico():
+
+    def __init__(self, url):
+        self.LABEL_FOUND = "FOUND"
+        self.video_url = None
+        self.video_quality = None
+        self.has_properties = False
+        self.page = url
+        self.view = webkit.WebView()
+
+        if not JS_DEBUG:
+            self.view.connect('console-message', lambda *arg : True)
+        self.view.connect('document-load-finished', self._load_finished)
+        self.view.connect("notify::title", self._window_title_change)
+        self.view.load_uri(self.page)
+        gtk.main()
+
+    def url(self):
+        return self.video_url
+    
+    def quality(self):
+        return self.video_quality
+    
+    def title(self):
+        return self.view_title
+
+    def _load_finished(self, *args):
+        video_js = """
+        $('.meride-video-container').bind("DOMSubtreeModified",function(){
+            if (document.title.indexOf('|') >= 0) {
+                video = $("#meride-video-player-" + $(".meride-video-container").attr('data-embed'))
+                url = video.attr("data-url-mp4")
+                quality = video.attr("data-url-iphone").split('sp,')[1].split(',.mp4')[0]
+                title = document.title.split('|')[0]
+                document.title = ""
+                document.title = "%s" + url + " " + quality + " " + title
+            }
+        });
+        """ % self.LABEL_FOUND
+        self.view.execute_script(video_js)
+
+    def _window_title_change(self, *args):
+        title = self.view.get_title()
+        if title is not None and title.find(self.LABEL_FOUND) >= 0:
+            info = title.replace(self.LABEL_FOUND, "").strip().split()
+            self.video_url = info[0].strip()
+            self.video_quality = info[1].strip().split(',')
+            print info
+            self.view_title = " ".join(info[2:])
+            gtk.main_quit()
+
+def main():
+    usage = 'usage: %prog [options] url'
+    parser = OptionParser(usage)
+    parser.add_option('-d', '--download', action="store_true", default=False, help='download video')
+    parser.add_option('-v', '--videoplayer', default="vlc", help='choose video player')
+    
+    opts, args = parser.parse_args()
+    
+    if len(args) is 0 or args[0].find(HOST) < 0:
+        print('Please provide a valid url for %s' % HOST)
+        parser.print_usage()
+        exit(1)
+
+    page = args[0]
+    provider = ServizioPubblico(page)
+
+    url = provider.url()
+    title = provider.title()
+    quality = provider.quality()
+    
+    info = url.split('_sp')
+    url_best_quality = "%(base)s_sp%(quality)s%(tail)s" % {
+        'base': info[0],
+        'quality': quality[-1],
+        'tail': info[1],
+    }
+    
+    call("wget -c %s -O %s.mp4" % (
+                url_best_quality,
+                title.replace(' ','_')
+            )
+        )
+
+    
+
+if __name__ == '__main__':
+    main()
+
