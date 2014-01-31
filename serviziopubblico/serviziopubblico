@@ -33,7 +33,7 @@ def main():
     usage = 'usage: %prog [options] url'
     parser = OptionParser(usage)
     parser.add_option('-d', '--download', action="store_true", default=False, help='download video')
-    parser.add_option('-v', '--videoplayer', default="vlc", help='choose video player [default: %default]')
+    parser.add_option('-p', '--player', default="vlc", help='choose video player [default: %default]')
 
     opts, args = parser.parse_args()
 
