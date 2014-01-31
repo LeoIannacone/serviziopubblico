@@ -53,10 +53,9 @@ def main():
             shell = True
             )
     else:
-        call("%s %s" % (opts.videoplayer, url), 
+        call("%s %s" % (opts.player, url), 
             shell = True
             )
-
 
 if __name__ == '__main__':
     main()
