@@ -1,8 +1,3 @@
-ServizioPubblico
-================
-
-Un semplice script per scaricare le puntante da www.serviziopubblico.it
-
 Informazioni
 ----------------------
 Un semplice script che permette la visione dei video di Servizio Pubblico senza l'utilizzo di un browser dedicato.
@@ -16,7 +11,7 @@ Per l'installazione è sufficiente eseguire:
 
     sudo python setup.py install
 
-Avrete il comando `serviziopubblico` pronta per l'utilizzo:
+Avrete il comando `serviziopubblico` pronto per l'utilizzo:
 
     $ serviziopubblico -h
       Usage: serviziopubblico [options] url
@@ -32,10 +27,10 @@ Avrete il comando `serviziopubblico` pronta per l'utilizzo:
 Esempi
 ----------------------
 
-Per **scaricare** una puntanta:
+Per **scaricare** una puntata:
 
     serviziopubblico -d http://www.serviziopubblico.it/puntate/lo-stato-criminale/
     
-Per **visualizzare** una puntanta utilizzando `mplayer`:
+Per **visualizzare** una puntata utilizzando `mplayer`:
 
     serviziopubblico -p mplayer http://www.serviziopubblico.it/puntate/lo-stato-criminale/
