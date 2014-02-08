@@ -3,7 +3,12 @@
 from subprocess import call
 from re import findall
 from optparse import OptionParser
-from urllib2 import urlopen
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
 
 HOST = "serviziopubblico.it"
 
@@ -11,13 +16,13 @@ class ServizioPubblico():
 
     def __init__(self, url):
 
-        data = urlopen(url).read()
+        data = urlopen(url).read().decode("utf-8")
 
         self.title = findall('entry-title.*>(.*)<', data)[0]
         self.id = findall('data-embed="([0-9]+)"', data)[0]
 
         info_base= "http://mediasp.meride.tv/embedproxy.php/sp/folder1/%s/" % self.id
-        data = urlopen(info_base).read()
+        data = urlopen(info_base).read().decode("utf-8")
 
         self.url = findall('<mp4><!\[CDATA\[(.*)\]\]></mp4>', data)[0]
 
