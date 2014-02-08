@@ -49,7 +49,7 @@ def main():
     title = provider.title
 
     if opts.download:
-        call("wget -c %s -O %s.mp4" % (url, title.replace(' ','_')),
+        call("wget -c %s -O '%s.mp4'" % (url, title.replace(' ','_')),
             shell = True
             )
     else:
