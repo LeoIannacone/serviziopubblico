@@ -3,7 +3,7 @@
 from subprocess import call
 from re import findall
 from optparse import OptionParser
-from urllib import urlopen
+from urllib2 import urlopen
 
 HOST = "serviziopubblico.it"
 
