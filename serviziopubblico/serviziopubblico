@@ -51,10 +51,10 @@ def main():
     provider = ServizioPubblico(page)
 
     url = provider.url_best_quality
-    title = provider.title
+    filename = provider.title.replace(' ','_').replace('/','-')
 
     if opts.download:
-        call("wget -c %s -O '%s.mp4'" % (url, title.replace(' ','_')),
+        call("wget -c %s -O '%s.mp4'" % (url, filename),
             shell = True
             )
     else:
