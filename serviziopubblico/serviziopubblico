@@ -2,6 +2,7 @@
 
 from subprocess import call
 from re import findall
+from HTMLParser import HTMLParser
 from optparse import OptionParser
 try:
     # For Python 3.0 and later
@@ -12,13 +13,19 @@ except ImportError:
 
 HOST = "serviziopubblico.it"
 
+def _clean_name(name):
+    name = name.replace(' ','_').replace('/','-').replace("'", '"')
+    while name[0] == '-':
+        name = name[1:]
+    return name
+
 class ServizioPubblico():
 
     def __init__(self, url):
 
         data = urlopen(url).read().decode("utf-8")
 
-        self.title = findall('entry-title.*>(.*)<', data)[0]
+        self.title = HTMLParser().unescape(findall('entry-title.*>(.*)<', data)[0])
         self.id = findall('data-embed="([0-9]+)"', data)[0]
 
         info_base= "http://mediasp.meride.tv/embedproxy.php/sp/folder1/%s/" % self.id
@@ -51,16 +58,15 @@ def main():
     provider = ServizioPubblico(page)
 
     url = provider.url_best_quality
-    filename = provider.title.replace(' ','_').replace('/','-')
+    filename = _clean_name(provider.title)
+    proc = ""
 
     if opts.download:
-        call("wget -c %s -O '%s.mp4'" % (url, filename),
-            shell = True
-            )
+        proc = "wget -c '%s' -O '%s.mp4'" % (url, filename)
     else:
-        call("%s %s" % (opts.player, url), 
-            shell = True
-            )
+        proc = "%s '%s'" % (opts.player, url)
+
+    call(proc, shell = True)
 
 if __name__ == '__main__':
     main()
