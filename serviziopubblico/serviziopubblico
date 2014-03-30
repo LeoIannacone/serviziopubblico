@@ -2,14 +2,15 @@
 
 from subprocess import call
 from re import findall
-from HTMLParser import HTMLParser
 from optparse import OptionParser
+
+# Python 3 support
 try:
-    # For Python 3.0 and later
     from urllib.request import urlopen
+    from html.parser import HTMLParser
 except ImportError:
-    # Fall back to Python 2's urllib2
     from urllib2 import urlopen
+    from HTMLParser import HTMLParser
 
 HOST = "serviziopubblico.it"
 
