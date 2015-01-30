@@ -19,6 +19,7 @@ Avrete il comando `serviziopubblico` pronto per l'utilizzo:
       Options:
       -h, --help            show this help message and exit
       -d, --download        download video
+      -u, --url		    show the http file url
       -p PLAYER, --player=PLAYER
                             choose video player [default: vlc]
 
